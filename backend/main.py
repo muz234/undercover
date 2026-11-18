@@ -3,13 +3,16 @@
 import json
 import sqlite3
 from collections.abc import Iterator
+from contextlib import closing
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated, Any, Literal
+from uuid import uuid4
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
 from pydantic import BaseModel
 
+from agent.main import run as run_agent
 from backend import db
 
 app = FastAPI(title="UnderCover", openapi_url="/api/openapi.json")
@@ -284,3 +287,44 @@ def add_event(claim_id: str, body: EventBody, conn: Conn) -> dict[str, int]:
     )
     conn.commit()
     return {"id": cursor.lastrowid or 0}
+
+
+def log_event(claim_id: str, tool: str, result: str) -> None:
+    """Add a step to a claim from the backend itself."""
+    with closing(db.connect()) as conn:
+        conn.execute(
+            "INSERT INTO events (claim_id, tool, input, result, at)"
+            " VALUES (?, ?, '', ?, ?)",
+            (claim_id, tool, result, now()),
+        )
+        conn.commit()
+
+
+def work_claim(claim_id: str) -> None:
+    """Run the agent on a claim; return it to the queue if it decides nothing."""
+    try:
+        run_agent(claim_id, f"{claim_id}-{uuid4().hex[:8]}")
+    except Exception as error:
+        log_event(claim_id, "error", f"The agent failed: {error}")
+    with closing(db.connect()) as conn:
+        claim = claim_row(conn, claim_id)
+        undecided = not conn.execute(
+            "SELECT 1 FROM decisions WHERE claim_id = ?", (claim_id,)
+        ).fetchone()
+        if claim["status"] == "in_progress" and undecided:
+            set_status(conn, claim_id, "waiting")
+            conn.commit()
+
+
+@app.post("/api/claims/{claim_id}/run", operation_id="run_claim_agent")
+def run_claim_agent(
+    claim_id: str, background: BackgroundTasks, conn: Conn
+) -> dict[str, str]:
+    """Start the agent on a waiting claim."""
+    claim = claim_row(conn, claim_id)
+    if claim["status"] != "waiting":
+        raise HTTPException(409, f"Claim is {claim['status']}")
+    set_status(conn, claim_id, "in_progress")
+    conn.commit()
+    background.add_task(work_claim, claim_id)
+    return {"status": "in_progress"}

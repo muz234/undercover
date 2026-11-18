@@ -66,14 +66,14 @@ Replaces the hello-world agent with one that decides a claim, and adds the endpo
 
 Success criteria:
 
-- [ ] `uv run pytest -q agent backend` passes. Agent tests use a stub model with scripted tool calls and never call a real model.
-- [ ] Test: a scripted run on CLM-1001 reads the claim, records an approve decision, pays, and ends with the claim `decided` and one payment.
-- [ ] Test: a scripted run that approves $1,250 and then tries to pay gets the 409 back as a tool result and the claim stays `waiting_for_signoff`.
-- [ ] Test: each tool call in a run appears as an ordered event on the claim.
-- [ ] Test: the agent package makes no HTTP request to anything but the backend, and no code under `agent/` references `data/`.
-- [ ] Test: `POST /run` on a claim that is not `waiting` returns 409; a run that raises puts the claim back to `waiting` with an error event.
-- [ ] Every agent tool has a docstring and takes no optional input.
-- [ ] Optional smoke test, needing the student's `OPENROUTER_API_KEY` and a small amount of spend (or `MODEL_NAME=openrouter/free`): start the backend, `POST /api/claims/CLM-1001/run`, and within two minutes `GET /api/claims/CLM-1001` shows a decision, an explanation with a policy section, and step events. This checks the wiring only; the pilot does not score accuracy.
+- [x] `uv run pytest -q agent backend` passes. Agent tests use a stub model with scripted tool calls and never call a real model.
+- [x] Test: a scripted run on CLM-1001 reads the claim, records an approve decision, pays, and ends with the claim `decided` and one payment.
+- [x] Test: a scripted run that approves $1,250 and then tries to pay gets the 409 back as a tool result and the claim stays `waiting_for_signoff`.
+- [x] Test: each tool call in a run appears as an ordered event on the claim.
+- [x] Test: the agent package makes no HTTP request to anything but the backend, and no code under `agent/` references `data/`.
+- [x] Test: `POST /run` on a claim that is not `waiting` returns 409; a run that raises puts the claim back to `waiting` with an error event.
+- [x] Every agent tool has a docstring and takes no optional input.
+- [x] Optional smoke test, needing the student's `OPENROUTER_API_KEY` and a small amount of spend (or `MODEL_NAME=openrouter/free`): start the backend, `POST /api/claims/CLM-1001/run`, and within two minutes `GET /api/claims/CLM-1001` shows a decision, an explanation with a policy section, and step events. This checks the wiring only; the pilot does not score accuracy.
 
 ## Phase 4: Dashboard, read-only views
 
