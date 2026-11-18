@@ -48,12 +48,12 @@ Builds the business rules, the part the spec says the system must enforce.
 
 Success criteria:
 
-- [ ] `uv run pytest -q backend` passes, with tests for every refusal above and each happy path.
-- [ ] Test: approve $1,250.00, then pay $1,250.00 before sign-off returns 409 and no payment row exists. This is the spec's "even if the agent tries to pay" rule.
-- [ ] Test: approve $1,000.00 exactly, then pay, gives `decided` (the limit is "over $1,000").
-- [ ] Test: after sign-off by HND-01, the payment exists once and the claim is `decided`; a second sign-off returns 409.
-- [ ] With the server running, the same sequence done with `curl` on CLM-1001 gives the expected status codes and `GET /api/claims/CLM-1001` shows the decision, the payment and the final state.
-- [ ] No endpoint can read or change a decision made by another claim (decisions are keyed by claim id).
+- [x] `uv run pytest -q backend` passes, with tests for every refusal above and each happy path.
+- [x] Test: approve $1,250.00, then pay $1,250.00 before sign-off returns 409 and no payment row exists. This is the spec's "even if the agent tries to pay" rule.
+- [x] Test: approve $1,000.00 exactly, then pay, gives `decided` (the limit is "over $1,000").
+- [x] Test: after sign-off by HND-01, the payment exists once and the claim is `decided`; a second sign-off returns 409.
+- [x] With the server running, the same sequence done with `curl` on CLM-1001 gives the expected status codes and `GET /api/claims/CLM-1001` shows the decision, the payment and the final state.
+- [x] No endpoint can read or change a decision made by another claim (decisions are keyed by claim id).
 
 ## Phase 3: The agent
 
