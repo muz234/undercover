@@ -66,6 +66,12 @@ def get_policy_wording() -> str:
 
 
 @tool
+def get_claims_manual() -> str:
+    """Get the claims manual: how UnderCover applies the wording and handles claims."""
+    return call("GET", "/api/claims-manual")
+
+
+@tool
 def record_decision(
     claim_id: str,
     decision: Literal["approve", "decline", "refer"],
@@ -95,6 +101,7 @@ TOOLS = [
     get_plan,
     get_customer,
     get_policy_wording,
+    get_claims_manual,
     record_decision,
     pay_claim,
 ]

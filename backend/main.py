@@ -143,6 +143,12 @@ def get_policy_wording() -> dict[str, str]:
     return {"text": db.policy_wording()}
 
 
+@app.get("/api/claims-manual", operation_id="get_claims_manual")
+def get_claims_manual() -> dict[str, str]:
+    """Get the claims handling manual, which says how the wording is applied."""
+    return {"text": db.claims_manual()}
+
+
 @app.get("/api/instructions", operation_id="get_instructions")
 def get_instructions() -> dict[str, str]:
     """Get the agent's instructions."""

@@ -49,6 +49,7 @@ def test_read_tools(monkeypatch):
     assert "deductible" in main.get_plan.invoke({"plan": "premium"})
     assert "CLM-0412" in main.get_customer.invoke({"customer_id": "CUS-3001"})
     assert "Policy Wording" in main.get_policy_wording.invoke({})
+    assert "Claims Handling Manual" in main.get_claims_manual.invoke({})
     assert main.get_claim.invoke({"claim_id": "CLM-0000"}).startswith("Error 404")
 
 

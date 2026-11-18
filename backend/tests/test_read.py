@@ -36,6 +36,8 @@ def test_records():
 def test_documents():
     assert "Policy Wording" in client.get("/api/policy-wording").json()["text"]
     assert client.get("/api/instructions").json()["text"]
+    manual = client.get("/api/claims-manual").json()["text"]
+    assert "Claims Handling Manual" in manual
 
 
 def test_missing():
@@ -87,5 +89,12 @@ def test_operations_have_ids_and_no_optional_inputs():
 
 def test_instructions_cover_the_rules():
     text = client.get("/api/instructions").json()["text"]
-    for phrase in ("record_decision", "pay_claim", "$1,000.00", "sign off", "wording"):
+    for phrase in (
+        "get_claims_manual",
+        "record_decision",
+        "pay_claim",
+        "$1,000.00",
+        "sign off",
+        "wording",
+    ):
         assert phrase in text

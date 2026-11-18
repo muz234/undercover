@@ -73,6 +73,11 @@ def policy_wording() -> str:
     return (DATA / "policy_wording.md").read_text(encoding="utf-8")
 
 
+def claims_manual() -> str:
+    """Return the claims handling manual."""
+    return (DATA / "claims_manual.md").read_text(encoding="utf-8")
+
+
 def seed(conn: sqlite3.Connection) -> None:
     """Load the claims, policies, customers, handlers and plans."""
     for claim in load_json("claims.json"):
