@@ -166,3 +166,29 @@ it("polls the queue while a claim is in progress", async () => {
   await act(() => vi.advanceTimersByTimeAsync(2000));
   expect(fetchMock.mock.calls.length).toBeGreaterThan(calls);
 });
+
+it("refreshes the queue every 60 seconds", async () => {
+  const fetchMock = mockFetch({ "GET /api/claims": queue });
+  render(<Queue />);
+  await screen.findByText("CLM-1001");
+  const calls = fetchMock.mock.calls.length;
+  await act(() => vi.advanceTimersByTimeAsync(59000));
+  expect(fetchMock.mock.calls).toHaveLength(calls);
+  await act(() => vi.advanceTimersByTimeAsync(1000));
+  expect(fetchMock.mock.calls).toHaveLength(calls + 1);
+});
+
+it("refreshes a claim every 60 seconds", async () => {
+  let status = "waiting";
+  mockFetch({
+    ...base,
+    "GET /api/claims/CLM-1001": () => ({ ...claim, status }),
+  });
+  render(<ClaimView claimId="CLM-1001" />);
+  await screen.findByText("Run agent");
+  status = "decided";
+  await act(() => vi.advanceTimersByTimeAsync(60000));
+  await vi.waitFor(() => {
+    expect(screen.queryByText("Run agent")).toBeNull();
+  });
+});

@@ -112,6 +112,7 @@ export const getInstructions = () =>
   request<{ text: string }>("/api/instructions");
 
 export const POLL_MS = 2000;
+export const REFRESH_MS = 60000;
 
 export const runClaim = (id: string) =>
   request<{ status: Status }>(`/api/claims/${id}/run`, {});

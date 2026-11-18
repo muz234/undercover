@@ -7,6 +7,7 @@ import {
   type Customer,
   type Policy,
   POLL_MS,
+  REFRESH_MS,
 } from "./api";
 import { RunPanel, SignOffPanel, Steps } from "./ClaimActions";
 import { label, money } from "./format";
@@ -148,8 +149,10 @@ export function ClaimView({ claimId }: Readonly<{ claimId: string }>) {
   }, [reload]);
 
   useEffect(() => {
-    if (!running) return;
-    const timer = setInterval(() => void reload(), POLL_MS);
+    const timer = setInterval(
+      () => void reload(),
+      running ? POLL_MS : REFRESH_MS,
+    );
     return () => {
       clearInterval(timer);
     };

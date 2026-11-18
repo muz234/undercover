@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   getClaims,
   POLL_MS,
+  REFRESH_MS,
   runAndWait,
   type QueueClaim,
   type Status,
@@ -32,8 +33,10 @@ export function Queue() {
   }, [reload]);
 
   useEffect(() => {
-    if (!working) return;
-    const timer = setInterval(() => void reload(), POLL_MS);
+    const timer = setInterval(
+      () => void reload(),
+      working ? POLL_MS : REFRESH_MS,
+    );
     return () => {
       clearInterval(timer);
     };
