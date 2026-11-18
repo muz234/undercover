@@ -96,5 +96,7 @@ def test_instructions_cover_the_rules():
         "$1,000.00",
         "sign off",
         "wording",
+        "third claim in 12 months",
+        "filed_on",
     ):
         assert phrase in text

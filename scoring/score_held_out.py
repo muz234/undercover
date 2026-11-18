@@ -5,7 +5,7 @@ held-out claims, then compares its decisions with the handlers' answer key.
 The answer key is read only after every run has finished, and never reaches the
 backend or the agent.
 
-    uv run scoring/score_held_out.py
+    uv run scoring/score_held_out.py [CLM-1101 ...]   (all claims, or only those named)
 """
 
 import json
@@ -63,6 +63,8 @@ def run_claim(claim_id: str) -> dict:
 def main() -> None:
     db_path = Path(tempfile.mkdtemp()) / "held_out.db"
     ids = load_held_out_claims(db_path)
+    if sys.argv[1:]:
+        ids = [i for i in ids if i in sys.argv[1:]]
     server = subprocess.Popen(
         ["uv", "run", "-m", "uvicorn", "backend.main:app", "--port", PORT],
         cwd=ROOT,

@@ -26,4 +26,4 @@ The claims pilot is built: every phase of `docs/PLAN.md` is done.
 
 ## Held-out score
 
-`uv run scoring/score_held_out.py` runs the agent on the 25 held-out claims through a temporary backend on port 8100 and scores it against the answer key, which is read only after the runs. It takes about 12 minutes at OpenRouter's 20 requests per minute limit for new accounts. Result with `openai/gpt-6-luna` and the claims manual: 23/25 fully correct (routine 15/15, hard 4/5, manual 4/5). The prompt was tuned after reading two held-out claims, so this is a development score, not a clean test.
+`uv run scoring/score_held_out.py` runs the agent on the 25 held-out claims through a temporary backend on port 8100 and scores it against the answer key, which is read only after the runs. It takes about 12 minutes at OpenRouter's 20 requests per minute limit for new accounts. Result with `openai/gpt-6-luna` and the claims manual: 25/25 fully correct (routine 15/15, hard 5/5, manual 5/5). The prompt was tuned after reading held-out claims (the incomplete-document rule and the third-claim rule), so this is a development score, not a clean test.
