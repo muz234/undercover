@@ -24,6 +24,6 @@ The claims pilot is built: every phase of `docs/PLAN.md` is done.
 - `npm run dev` starts the backend on port 8000 and the dashboard on port 5173. Set `OPENROUTER_API_KEY` in `.env`, and optionally `MODEL_NAME` such as `openrouter/free`.
 - `npm run check` runs every check. Stop `npm run dev` first: the end-to-end tests start their own backend on port 8000.
 
-## Not done
+## Held-out score
 
-- The agent's accuracy has not been scored. That needs `data/evals/`, which stays closed until asked.
+`uv run scoring/score_held_out.py` runs the agent on the 25 held-out claims through a temporary backend on port 8100 and scores it against the answer key, which is read only after the runs. It takes about 12 minutes at OpenRouter's 20 requests per minute limit for new accounts. Result with `openai/gpt-6-luna`: 18/25 fully correct (routine 14/15, hard 3/5, manual 1/5). Four of the misses need the claims manual, which the pilot leaves out; two share one gap (approving when a required document is incomplete).

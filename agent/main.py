@@ -16,7 +16,7 @@ from agent.steps import StepLogger
 
 load_dotenv(override=True)
 
-BACKEND_URL = "http://localhost:8000"
+BACKEND_URL = os.getenv("UNDERCOVER_BACKEND_URL", "http://localhost:8000")
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 DEFAULT_MODEL = "openai/gpt-6-luna"
 
@@ -108,6 +108,7 @@ def model() -> ChatOpenAI:
         base_url=OPENROUTER_BASE_URL,
         api_key=SecretStr(os.environ["OPENROUTER_API_KEY"]),
         reasoning_effort=None if name else "low",
+        max_retries=10,
     )
 
 

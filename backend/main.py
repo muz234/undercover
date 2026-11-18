@@ -301,19 +301,17 @@ def log_event(claim_id: str, tool: str, result: str) -> None:
 
 
 def work_claim(claim_id: str) -> None:
-    """Run the agent on a claim; return it to the queue if it decides nothing."""
+    """Run the agent on a claim; if it stops half way, return the claim to the queue."""
     try:
         run_agent(claim_id, f"{claim_id}-{uuid4().hex[:8]}")
     except Exception as error:
         log_event(claim_id, "error", f"The agent failed: {error}")
     with closing(db.connect()) as conn:
-        claim = claim_row(conn, claim_id)
-        undecided = not conn.execute(
-            "SELECT 1 FROM decisions WHERE claim_id = ?", (claim_id,)
-        ).fetchone()
-        if claim["status"] == "in_progress" and undecided:
+        if claim_row(conn, claim_id)["status"] == "in_progress":
+            conn.execute("DELETE FROM decisions WHERE claim_id = ?", (claim_id,))
             set_status(conn, claim_id, "waiting")
             conn.commit()
+            log_event(claim_id, "error", "The run did not finish; it can be run again.")
 
 
 @app.post("/api/claims/{claim_id}/run", operation_id="run_claim_agent")
