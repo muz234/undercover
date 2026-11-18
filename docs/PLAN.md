@@ -86,12 +86,12 @@ Builds the screens that show the queue, a claim in full and the instructions, in
 
 Success criteria:
 
-- [ ] `npm run check:ts` passes, including vitest at 80% coverage or more, with component tests that use a mocked `fetch`.
-- [ ] `tsc` strict passes and a search finds no `any` under `dashboard/src`.
-- [ ] With `npm run dev` running, the Playwright MCP browser at `http://localhost:5173` shows 25 claims in the queue with status chips; a screenshot is checked against `docs/BRAND.md` for fonts, colors and rounded panels without outlines.
-- [ ] Clicking CLM-1001 shows its story, three items totaling $420.00, its documents, the Premium plan and Maya Patel's earlier claim.
-- [ ] The Instructions view shows the text from `/api/instructions`, with no edit control.
-- [ ] The same pages in dark mode (emulated with the Playwright MCP server) use the dark surfaces from the brand document and stay readable.
+- [x] `npm run check:ts` passes, including vitest at 80% coverage or more, with component tests that use a mocked `fetch`.
+- [x] `tsc` strict passes and a search finds no `any` under `dashboard/src`.
+- [x] With `npm run dev` running, the Playwright MCP browser at `http://localhost:5173` shows 25 claims in the queue with status chips; a screenshot is checked against `docs/BRAND.md` for fonts, colors and rounded panels without outlines.
+- [x] Clicking CLM-1001 shows its story, three items totaling $420.00, its documents, the Premium plan and Maya Patel's earlier claim.
+- [x] The Instructions view shows the text from `/api/instructions`, with no edit control.
+- [x] The same pages in dark mode (emulated with the Playwright MCP server) use the dark surfaces from the brand document and stay readable.
 
 ## Phase 5: Dashboard, running the agent and signing off
 

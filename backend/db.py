@@ -95,7 +95,7 @@ def seed(conn: sqlite3.Connection) -> None:
 def connect() -> sqlite3.Connection:
     """Open the database, creating and seeding it when empty."""
     path = Path(os.getenv("UNDERCOVER_DB") or ROOT / "undercover.db")
-    conn = sqlite3.connect(path, timeout=30)
+    conn = sqlite3.connect(path, timeout=30, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.executescript(SCHEMA)
     if conn.execute("SELECT COUNT(*) FROM claims").fetchone()[0] == 0:

@@ -83,3 +83,9 @@ def test_operations_have_ids_and_no_optional_inputs():
                 ref = body["content"]["application/json"]["schema"]["$ref"]
                 schema = schemas[ref.split("/")[-1]]
                 assert set(schema["required"]) == set(schema["properties"])
+
+
+def test_instructions_cover_the_rules():
+    text = client.get("/api/instructions").json()["text"]
+    for phrase in ("record_decision", "pay_claim", "$1,000.00", "sign off", "wording"):
+        assert phrase in text
