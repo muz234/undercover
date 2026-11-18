@@ -120,11 +120,11 @@ Locks the behavior in with Playwright tests and brings the docs up to date.
 
 Success criteria:
 
-- [ ] `npm run e2e` passes, with tests for: the queue lists 25 claims; a claim shows its details; a stubbed run ends decided with steps shown; an over-limit approval waits and then pays after sign-off; the instructions view is read only.
-- [ ] `npm run check` passes in full: ruff, pyright, pytest with 80% coverage, ESLint, Prettier, tsc, vitest with 80% coverage and Playwright.
-- [ ] `docs/STATUS.md` describes the pilot as built, with the run commands, and every box in this plan is ticked.
-- [ ] `git status` shows a clean tree after the last commit, and `undercover.db` is not tracked.
-- [ ] No file under `data/evals/` was opened by any code or test (checked with a grep for `evals` across `backend`, `agent`, `dashboard` and `e2e`, which returns only the test that asserts it is never read).
+- [x] `npm run e2e` passes, with tests for: the queue lists 25 claims; a claim shows its details; a stubbed run ends decided with steps shown; an over-limit approval waits and then pays after sign-off; the instructions view is read only.
+- [x] `npm run check` passes in full: ruff, pyright, pytest with 80% coverage, ESLint, Prettier, tsc, vitest with 80% coverage and Playwright.
+- [x] `docs/STATUS.md` describes the pilot as built, with the run commands, and every box in this plan is ticked.
+- [x] `git status` shows a clean tree after the last commit, and `undercover.db` is not tracked.
+- [x] No file under `data/evals/` was opened by any code or test (checked with a grep for `evals` across `backend`, `agent`, `dashboard` and `e2e`, which returns only the test that asserts it is never read).
 
 ## Not in this plan
 
