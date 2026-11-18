@@ -118,3 +118,21 @@ def test_model_name(monkeypatch):
     assert main.model().model_name == "openai/gpt-6-luna"
     monkeypatch.setenv("MODEL_NAME", "openrouter/free")
     assert main.model().model_name == "openrouter/free"
+
+
+def test_scripted_model_decides_and_pays(monkeypatch):
+    monkeypatch.setenv("UNDERCOVER_SCRIPTED_MODEL", "1")
+    monkeypatch.setattr(main, "backend", lambda: TestClient(app))
+    assert main.run("CLM-1001", "t") == "Decision recorded."
+    claim = client.get("/api/claims/CLM-1001").json()
+    assert claim["status"] == "decided"
+    assert claim["payment"]["amount"] == 420.0
+
+
+def test_scripted_model_waits_for_sign_off_on_a_large_claim(monkeypatch):
+    monkeypatch.setenv("UNDERCOVER_SCRIPTED_MODEL", "1")
+    monkeypatch.setattr(main, "backend", lambda: TestClient(app))
+    main.run("CLM-1002", "t")
+    claim = client.get("/api/claims/CLM-1002").json()
+    assert claim["status"] == "waiting_for_signoff"
+    assert claim["payment"] is None

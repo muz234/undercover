@@ -110,3 +110,19 @@ export const getCustomer = (id: string) =>
 export const getHandlers = () => request<Handler[]>("/api/handlers");
 export const getInstructions = () =>
   request<{ text: string }>("/api/instructions");
+
+export const POLL_MS = 2000;
+
+export const runClaim = (id: string) =>
+  request<{ status: Status }>(`/api/claims/${id}/run`, {});
+export const signOff = (id: string, handlerId: string) =>
+  request<{ status: Status }>(`/api/claims/${id}/sign-off`, {
+    handler_id: handlerId,
+  });
+
+export async function runAndWait(id: string): Promise<void> {
+  await runClaim(id);
+  while ((await getClaim(id)).status === "in_progress") {
+    await new Promise((resolve) => setTimeout(resolve, POLL_MS));
+  }
+}

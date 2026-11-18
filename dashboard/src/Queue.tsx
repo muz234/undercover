@@ -1,5 +1,11 @@
-import { useEffect, useState } from "react";
-import { getClaims, type QueueClaim, type Status } from "./api";
+import { useCallback, useEffect, useState } from "react";
+import {
+  getClaims,
+  POLL_MS,
+  runAndWait,
+  type QueueClaim,
+  type Status,
+} from "./api";
 import { label, money, STATUS_LABELS } from "./format";
 import { StatusChip } from "./StatusChip";
 
@@ -8,13 +14,39 @@ export function Queue() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<Status | "all">("all");
 
+  const [running, setRunning] = useState(false);
+
+  const reload = useCallback(
+    () =>
+      getClaims()
+        .then(setClaims)
+        .catch((e: unknown) => {
+          setError(e instanceof Error ? e.message : "Could not load the queue");
+        }),
+    [],
+  );
+  const working = claims?.some((c) => c.status === "in_progress") ?? false;
+
   useEffect(() => {
-    getClaims()
-      .then(setClaims)
-      .catch((e: unknown) => {
-        setError(e instanceof Error ? e.message : "Could not load the queue");
-      });
-  }, []);
+    void reload();
+  }, [reload]);
+
+  useEffect(() => {
+    if (!working) return;
+    const timer = setInterval(() => void reload(), POLL_MS);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [working, reload]);
+
+  const runAll = async () => {
+    setRunning(true);
+    for (const c of (claims ?? []).filter((x) => x.status === "waiting")) {
+      await runAndWait(c.claim_id);
+      await reload();
+    }
+    setRunning(false);
+  };
 
   if (error) return <p className="error">{error}</p>;
   if (!claims) return <p>Loading the queue</p>;
@@ -25,6 +57,12 @@ export function Queue() {
     <section className="panel">
       <div className="panel-head">
         <h1>Claims queue</h1>
+        <button
+          disabled={running || !claims.some((c) => c.status === "waiting")}
+          onClick={() => void runAll()}
+        >
+          Run all waiting
+        </button>
         <label>
           Show{" "}
           <select

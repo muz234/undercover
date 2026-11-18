@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   getClaim,
   getCustomer,
@@ -6,7 +6,9 @@ import {
   type Claim,
   type Customer,
   type Policy,
+  POLL_MS,
 } from "./api";
+import { RunPanel, SignOffPanel, Steps } from "./ClaimActions";
 import { label, money } from "./format";
 import { StatusChip } from "./StatusChip";
 
@@ -126,29 +128,43 @@ function DecisionPanel({ claim }: Readonly<{ claim: Claim }>) {
 
 export function ClaimView({ claimId }: Readonly<{ claimId: string }>) {
   const [claim, setClaim] = useState<Claim | null>(null);
-  const [background, setBackground] = useState<{
-    policy: Policy;
-    customer: Customer;
-  } | null>(null);
+  const [policy, setPolicy] = useState<Policy | null>(null);
+  const [customer, setCustomer] = useState<Customer | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    getClaim(claimId)
-      .then(async (c) => {
-        setClaim(c);
-        const [policy, customer] = await Promise.all([
-          getPolicy(c.policy_id),
-          getCustomer(c.customer_id),
-        ]);
-        setBackground({ policy, customer });
-      })
-      .catch((e: unknown) => {
-        setError(e instanceof Error ? e.message : "Could not load the claim");
-      });
-  }, [claimId]);
+  const fail = (e: unknown) => {
+    setError(e instanceof Error ? e.message : "Could not load the claim");
+  };
+  const reload = useCallback(
+    () => getClaim(claimId).then(setClaim).catch(fail),
+    [claimId],
+  );
+  const running = claim?.status === "in_progress";
+  const policyId = claim?.policy_id;
+  const customerId = claim?.customer_id;
 
-  if (error) return <p className="error">{error}</p>;
-  if (!claim) return <p>Loading the claim</p>;
+  useEffect(() => {
+    void reload();
+  }, [reload]);
+
+  useEffect(() => {
+    if (!running) return;
+    const timer = setInterval(() => void reload(), POLL_MS);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [running, reload]);
+
+  useEffect(() => {
+    if (!policyId || !customerId) return;
+    getPolicy(policyId).then(setPolicy).catch(fail);
+    getCustomer(customerId).then(setCustomer).catch(fail);
+  }, [policyId, customerId]);
+
+  if (!claim)
+    return (
+      <p className={error ? "error" : ""}>{error ?? "Loading the claim"}</p>
+    );
 
   return (
     <>
@@ -156,9 +172,13 @@ export function ClaimView({ claimId }: Readonly<{ claimId: string }>) {
         <h1 className="mono">{claim.claim_id}</h1>
         <StatusChip status={claim.status} />
       </div>
+      {error && <p className="error">{error}</p>}
+      <RunPanel claim={claim} onChange={() => void reload()} />
+      <Steps claim={claim} />
       <DecisionPanel claim={claim} />
+      <SignOffPanel claim={claim} onChange={() => void reload()} />
       <Story claim={claim} />
-      {background && <Background {...background} />}
+      {policy && customer && <Background policy={policy} customer={customer} />}
     </>
   );
 }

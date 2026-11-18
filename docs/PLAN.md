@@ -104,10 +104,10 @@ Makes the dashboard live: start the agent, watch its steps and sign off large pa
 
 Success criteria:
 
-- [ ] `npm run check:ts` passes with tests for the run button, the polling (with fake timers), the steps list and the sign-off flow.
-- [ ] End to end with a stub agent (a test-only environment variable swaps in the scripted stub model on the backend; nothing in the product code path changes), in the Playwright MCP browser: run CLM-1001, see steps appear, see the decision and the status chip turn to decided.
-- [ ] With a scripted approval of $1,250 on another claim, the browser shows "waiting for sign-off", the pay endpoint is blocked (checked with `curl`, 409), and after choosing Dana Whitfield and signing off the chip shows decided and the payment is listed.
-- [ ] Reloading the page mid-run keeps showing the steps so far and carries on updating.
+- [x] `npm run check:ts` passes with tests for the run button, the polling (with fake timers), the steps list and the sign-off flow.
+- [x] End to end with a stub agent (a test-only environment variable swaps in the scripted stub model on the backend; nothing in the product code path changes), in the Playwright MCP browser: run CLM-1001, see steps appear, see the decision and the status chip turn to decided.
+- [x] With a scripted approval of $1,250 on another claim, the browser shows "waiting for sign-off", the pay endpoint is blocked (checked with `curl`, 409), and after choosing Dana Whitfield and signing off the chip shows decided and the payment is listed.
+- [x] Reloading the page mid-run keeps showing the steps so far and carries on updating.
 
 ## Phase 6: End-to-end tests, documentation and final check
 

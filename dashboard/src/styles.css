@@ -60,6 +60,7 @@ a {
 }
 
 main {
+  box-sizing: border-box;
   max-width: 72rem;
   margin: 0 auto;
   padding: 0 2rem 3rem;
@@ -194,4 +195,12 @@ select {
 
 td.mono {
   white-space: nowrap;
+}
+
+.steps {
+  padding-left: 1.25rem;
+}
+
+.steps li {
+  margin-bottom: 0.5rem;
 }

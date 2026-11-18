@@ -11,6 +11,7 @@ from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
 
+from agent.scripted import ScriptedModel
 from agent.steps import StepLogger
 
 load_dotenv(override=True)
@@ -114,6 +115,8 @@ def run(claim_id: str, thread_id: str, llm: BaseChatModel | None = None) -> str:
     """Decide one claim and return the agent's final reply."""
     with backend() as client:
         instructions = client.get("/api/instructions").raise_for_status().json()["text"]
+    if llm is None and os.getenv("UNDERCOVER_SCRIPTED_MODEL"):
+        llm = ScriptedModel()
     agent = create_agent(llm or model(), tools=TOOLS, system_prompt=instructions)
     result = agent.invoke(
         {"messages": [{"role": "user", "content": f"Decide claim {claim_id}."}]},
